@@ -32,7 +32,6 @@ This project combines the power of **Python**, **data science**, and **modern we
 Follow these steps to set up and run the project locally:
 
 1️⃣ Clone the repository
-```bash
 git clone https://github.com/alnroy/cardio.git
 cd cardio
 2️⃣ Create and activate a virtual environment
