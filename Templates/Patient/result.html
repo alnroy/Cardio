@@ -1,0 +1,32 @@
+{% extends 'Patient/base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center">Extracted and Analyzed Health Parameters</h2>
+    <div class="card p-4 shadow-sm">
+        <table class="table table-bordered">
+            <thead class="table-dark">
+                <tr>
+                    <th>Parameter</th>
+                    <th>Value</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for key, value in data.items %}
+                <tr>
+                    <td>{{ key }}</td>
+                    <td>{{ value }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div class="text-center mt-3">
+            <a href="{% url 'generate_diet_plan' %}" class="btn btn-success">Generate Diet Plan</a>
+            <a href="{% url 'upload_pdf' %}" class="btn btn-primary">Upload Another PDF</a>
+        </div>
+        <br>
+        <br>
+        <br>
+    </div>
+</div>
+{% endblock %}

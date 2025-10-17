@@ -1,0 +1,244 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<head>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <style>
+    body {
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      font-family: 'Poppins', sans-serif;
+      color: #ffffff;
+      position: relative;
+    }
+  
+    .video-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      z-index: 0;
+    }
+  
+    .bg-video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0.4;
+    }
+  
+    .login-container {
+      position: relative;
+      z-index: 2;
+      max-width: 450px;
+      margin: 60px auto;
+      padding: 30px;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(10px);
+      border-radius: 12px;
+      box-shadow: 0 0 25px rgba(0, 200, 255, 0.25);
+    }
+  
+    .logo h1 {
+      text-align: center;
+      font-weight: bold;
+      color: #00c8ff;
+      margin-bottom: 20px;
+    }
+  
+    label {
+      font-weight: 600;
+      margin-bottom: 5px;
+      color: #dddddd;
+    }
+  
+    .form-control {
+      border-radius: 8px;
+      padding: 10px;
+      background-color: rgba(195, 97, 200, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      color: #ffffff;
+      z-index: 2;
+      position: relative;
+    }
+  
+    .form-control::placeholder {
+      color: #cccccc;
+    }
+  
+    .form-control:focus {
+      border: 1px solid #00c8ff;
+      box-shadow: 0 0 8px rgba(0, 200, 255, 0.4);
+      background-color: rgba(46, 123, 110, 0.2);
+      color: #00c8ff;
+    }
+  
+    .btn-custom {
+      width: 100%;
+      background: #00c8ff;
+      color: #0f0f0f;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      font-size: 16px;
+      transition: all 0.3s ease;
+    }
+  
+    .btn-custom:hover {
+      background: #0097cc;
+      color: #ffffff;
+      box-shadow: 0 0 10px rgba(0, 200, 255, 0.6);
+    }
+  
+    .register-link {
+      text-align: center;
+      margin-top: 15px;
+      font-size: 14px;
+      color: #cccccc;
+    }
+  
+    .register-link a {
+      color: #00c8ff;
+      font-weight: bold;
+      text-decoration: none;
+    }
+  
+    .register-link a:hover {
+      text-decoration: underline;
+    }
+  
+    select.form-control {
+      background-color: rgba(255, 255, 255, 0.15);
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      padding: 10px;
+      border-radius: 8px;
+    }
+  
+    select.form-control:focus {
+      border: 1px solid #00c8ff;
+      background-color: rgba(255, 255, 255, 0.2);
+    }
+  
+    .password-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+  
+    .password-wrapper input {
+      padding-right: 40px;
+    }
+  
+    .password-wrapper i {
+      position: absolute;
+      right: 10px;
+      cursor: pointer;
+      color: #00c8ff;
+      z-index: 3;
+    }
+  </style>
+  
+</head>
+<body>
+  
+  <br>
+<br>
+<br><br>
+  <div class="container">
+    <div class="video-overlay">
+      <video autoplay muted loop playsinline class="bg-video">
+        <source src="{% static "threevideo.mp4" %}" type="video/mp4">
+        Your browser does not support the video tag.
+      </video>
+    </div>
+    <div class="login-container">
+      <div class="logo">
+        
+        <h1>Medicaid</h1>
+      </div>
+      <form class="login-form" id="loginForm" method="POST">
+        <h2 class="text-center mb-4">Login</h2>
+        <div class="form-group">
+          <label for="type">User Type</label>
+          <select id="type" name="type" class="form-control" required>
+            <option value="">Select</option>
+            <option value="ADMIN">Admin</option>
+            <option value="USER">Patient</option>
+            <option value="DOCTOR">Doctor</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="username">Username</label>
+          <input type="text" id="username" name="username" class="form-control" required>
+        </div>
+        <div class="form-group">
+          <label for="password">Password</label>
+          <div class="password-wrapper">
+            <input type="password" id="password" name="password" class="form-control" required>
+            <i class="fa-solid fa-eye-slash" id="togglePassword"></i>
+          </div>
+        </div>       
+        <button type="button" id="submit" class="btn btn-custom mt-3">Login</button>
+        <p class="register-link">Don't have an account? <a href="{% url 'Register' %}">Register here</a></p>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    
+      const togglePassword = document.getElementById('togglePassword');
+      const passwordInput = document.getElementById('password');
+    
+      togglePassword.addEventListener('click', function () {
+        const isPassword = passwordInput.type === 'password';
+        passwordInput.type = isPassword ? 'text' : 'password';
+        this.classList.toggle('fa-eye-slash');
+        this.classList.toggle('fa-eye');
+        
+      });
+  
+    $('#submit').on('click', function () {
+      var userid = $('#username').val();
+      var password = $('#password').val();
+      var userType = $('#type').val();
+
+      if (userid && password && userType) {
+        $.ajax({
+          method: 'POST',
+          data: {
+            userid: userid,
+            password: password,
+            type: userType,
+            csrfmiddlewaretoken: '{{ csrf_token }}'
+          },
+          success: function (response) {
+            if (response.status === 1) {
+              window.location.href = "{% url 'adminhome' %}";
+            } else if (response.status === 2) {
+              window.location.href = "{% url 'userhome' %}";
+            } else if (response.status === 3) {
+              window.location.href = "{% url 'doctorhome' %}";
+            } else {
+              alert("Invalid login details");
+            }
+          },
+          error: function (xhr, textStatus, errorThrown) {
+            console.error("AJAX request failed:", textStatus, errorThrown);
+            alert("There was an error with the login request.");
+          }
+        });
+      } else {
+        alert("Please fill in all fields.");
+      }
+    });
+  </script>
+</body>
+{% endblock content %}

@@ -1,0 +1,130 @@
+{% extends "Patient/base.html" %}
+
+{% block content %}
+<head>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .container {
+      
+            margin: 30px auto;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(12px);
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+          }
+        h2 {
+            color: #007bff;
+        }
+        .table th, .table td {
+            vertical-align: middle;
+        }
+        .print-button {
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+        .print-area {
+            display: none;
+        }
+    </style>
+    <script>
+        function printSelected() {
+            const selectedRows = document.querySelectorAll('.appointment-checkbox:checked');
+            if (selectedRows.length === 0) {
+                alert("Please select at least one appointment to print.");
+                return;
+            }
+
+            let printContent = '<h2>Appointment Receipt</h2>';
+            printContent += '<table class="table table-striped"><thead><tr><th>#</th><th>Doctor Name</th><th>Specialty</th><th>Booking Date</th><th>Booking Slot</th><th>Symptoms</th><th>Status</th></tr></thead><tbody>';
+
+            selectedRows.forEach(row => {
+                const appointmentRow = row.closest('tr');
+                const cells = appointmentRow.querySelectorAll('td');
+                printContent += '<tr>';
+                printContent += '<td>' + cells[0].innerText + '</td>';
+                printContent += '<td>' + cells[1].innerText + '</td>';
+                printContent += '<td>' + cells[2].innerText + '</td>';
+                printContent += '<td>' + cells[3].innerText + '</td>';
+                printContent += '<td>' + cells[4].innerText + '</td>';
+                printContent += '<td>' + cells[5].innerText + '</td>';
+                printContent += '<td>' + cells[6].innerText + '</td>';
+                printContent += '</tr>';
+            });
+
+            printContent += '</tbody></table>';
+            
+            const printWindow = window.open('', '', 'height=600,width=800');
+            printWindow.document.write('<html><head><title>Appointment Receipt</title>');
+            printWindow.document.write('<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">');
+            printWindow.document.write('</head><body>');
+            printWindow.document.write(printContent);
+            printWindow.document.write('</body></html>');
+            printWindow.document.close();
+            printWindow.print();
+        }
+    </script>
+</head>
+<body>
+    {% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} mt-2">{{ message }}</div>
+    {% endfor %}
+{% endif %}
+
+    <div class="container mt-5">
+        <h2 class="text-center">My Appointment History</h2>
+        <button class="btn btn-primary print-button" onclick="printSelected()">Print Selected Appointments</button>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Select</th>
+                    <th>#</th>
+                    <th>Doctor Name</th>
+                    <th>Specialty</th>
+                    <th>Booking Date</th>
+                    <th>Booking Slot</th>
+                    <th>Symptoms</th>
+                    <th>Status</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if ob %}
+                    {% for appointment in ob %}
+                        <tr>
+                            <td><input type="checkbox" class="appointment-checkbox"></td>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ appointment.doctor.full_name }}</td>
+                            <td>{{ appointment.doctor.specialty }}</td>
+                            <td>{{ appointment.booking_date }}</td>
+                            <td>{{ appointment.booking_sloat }}</td>
+                            <td>{{ appointment.symptoms }}</td>
+                            <td>{{ appointment.status }}</td>
+                            <td>
+                                {% if appointment.status == 'Completed' %}
+                                    <a href="{% url "viewmore" appointment.id %}">View Medicines</a>
+                                {% elif appointment.status == 'Pending' or appointment.status == 'Confirmed' %}
+                                    <form method="post" action="{% url 'change_booking_date' appointment.id %}">
+                                        {% csrf_token %}
+                                        <input type="date" name="new_date" required>
+                                        <button type="submit" class="btn btn-sm btn-warning">Change Date</button>
+                                    </form>
+                                {% endif %}
+                            </td>
+                            
+                        </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="8" class="text-center">No appointments found.</td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</body>
+{% endblock content %}

@@ -1,0 +1,76 @@
+{% extends 'Patient/base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center">Personalized Kerala Style Diet Plan</h2>
+
+    <!-- Extracted Health Conditions -->
+    <div class="card p-4 shadow-sm mb-4">
+        <h4>Extracted Health Conditions</h4>
+        <table class="table table-bordered">
+            <thead class="table-dark">
+                <tr>
+                    <th>Condition</th>
+                    <th>Value</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for key, value in analyzed_data.items %}
+                <tr>
+                    <td>{{ key }}</td>
+                    <td>{{ value }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Recommended Diet Plan -->
+    <div class="card p-4 shadow-sm mb-4">
+        <h4>Recommended Diet Plan</h4>
+        <ul>
+            {% for item in diet_plan %}
+            <li>{{ item }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <!-- Meal-wise Food Recommendations -->
+    <div class="card p-4 shadow-sm">
+        <h4>Meal-wise Kerala Food Recommendations</h4>
+        <table class="table table-bordered">
+            <thead class="table-dark">
+                <tr>
+                    <th>Meal</th>
+                    <th>Food</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for meal, foods in meal_plan.items %}
+                <tr>
+                    <td>{{ meal }}</td>
+                    <td>
+                        <ul>
+                            {% for food in foods %}
+                            <li>{{ food }}</li>
+                            {% endfor %}
+                        </ul>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Doctor Consultation Advice -->
+    {% if doctor_needed %}
+    <div class="alert alert-danger text-center mt-3">
+        ⚠️ Based on your health parameters, a doctor consultation is recommended.
+    </div>
+    {% endif %}
+
+    <div class="text-center mt-3">
+        <a href="{% url 'upload_pdf' %}" class="btn btn-primary">Upload Another PDF</a>
+    </div>
+</div>
+{% endblock %}

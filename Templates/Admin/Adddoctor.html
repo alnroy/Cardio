@@ -1,0 +1,271 @@
+{% extends "Admin/base.html" %}
+
+{% block content %}
+<head>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #d0f1ff, #eaf6ff);
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+    
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(12px);
+            border-radius: 16px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease-in-out;
+        }
+    
+        .logo h1 {
+            text-align: center;
+            color: #007acc;
+            font-weight: 600;
+        }
+    
+        h2 {
+            text-align: center;
+            color: #006bb3;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+    
+        .input-group {
+            margin-bottom: 18px;
+        }
+    
+        .input-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 500;
+            color: #444;
+        }
+    
+        .input-group input,
+        .input-group textarea {
+            width: 100%;
+            padding: 12px;
+            font-size: 15px;
+            border: 1px solid rgba(0, 122, 204, 0.25);
+            border-radius: 8px;
+            background-color: rgba(255, 255, 255, 0.8);
+            transition: border 0.3s, box-shadow 0.3s;
+        }
+    
+        .input-group input:focus,
+        .input-group textarea:focus {
+            outline: none;
+            border-color: #007acc;
+            box-shadow: 0 0 0 4px rgba(0, 122, 204, 0.2);
+        }
+    
+        .input-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+    
+        button {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(145deg, #1e90ff, #007bff);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease-in-out;
+        }
+    
+        button:hover {
+            background: linear-gradient(145deg, #0066cc, #005cbf);
+            box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+        }
+    
+        #responseMessage {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 16px;
+            color: #333;
+        }
+    
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+        }
+        
+    .password-wrapper {
+        position: relative;
+      }
+      
+      .password-wrapper input {
+        padding-right: 40px; /* add space for the icon */
+      }
+      
+      .password-wrapper i {
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        color:rgb(0, 41, 56);
+        cursor: pointer;
+        z-index: 2;
+      }
+    </style>
+    </head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <h1>Add New Doctor</h1>
+        </div>
+        <form id="doctorForm">
+            <h2>Doctor Registration</h2>
+
+            <div class="input-group">
+                <label for="full_name">Full Name</label>
+                <input type="text" id="full_name" name="full_name" required>
+            </div>
+
+            <div class="input-group">
+                <label for="specialty">Specialty</label>
+                <input type="text" id="specialty" name="specialty" required>
+            </div>
+
+            <div class="input-group">
+                <label for="phone">Phone Number</label>
+                <input type="tel" id="phone" name="phone" required>
+            </div>
+
+            <div class="input-group">
+                <label for="address">Address</label>
+                <textarea id="address" name="address" rows="3" required></textarea>
+            </div>
+
+            <div class="input-group">
+                <label for="available_days">Available Days</label>
+                <input type="text" id="available_days" name="available_days" placeholder="E.g., Mon, Wed, Fri" required>
+            </div>
+
+            <div class="input-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+
+            <div class="password-wrapper">
+                <label for="password">Password</label>
+                <div class="input-group">
+                    <input type="password" id="password" name="password" required >
+                    <i class="fa-solid fa-eye-slash" id="togglePassword"></i>
+                </div>
+            </div>
+            
+               
+            <button type="button" id="submit">Add Doctor</button>
+            <p id="responseMessage"></p>
+        </form>
+    </div>
+
+    <script>
+    const togglePassword = document.getElementById('togglePassword');
+    const passwordInput = document.getElementById('password');
+  
+    togglePassword.addEventListener('click', function () {
+      const isPassword = passwordInput.type === 'password';
+      passwordInput.type = isPassword ? 'text' : 'password';
+      this.classList.toggle('fa-eye-slash');
+      this.classList.toggle('fa-eye');
+      
+    });
+        $(document).ready(function () {
+            $('#submit').on('click', function () {
+                var isValid = true;
+                var feedback = "";
+
+                // Full name validation
+                var fullName = $('#full_name').val();
+                if (!/^[a-zA-Z\s]{3,50}$/.test(fullName)) {
+                    isValid = false;
+                    feedback += "Full Name must be between 3-50 characters and contain only letters and spaces.<br>";
+                }
+
+                // Specialty validation
+                var specialty = $('#specialty').val();
+                if (!/^[a-zA-Z\s]{3,50}$/.test(specialty)) {
+                    isValid = false;
+                    feedback += "Specialty must be between 3-50 characters and contain only letters and spaces.<br>";
+                }
+
+                // Phone validation
+                var phone = $('#phone').val();
+                if (!/^\d{10}$/.test(phone)) {
+                    isValid = false;
+                    feedback += "Phone number must be exactly 10 digits.<br>";
+                }
+
+                // Address validation
+                var address = $('#address').val();
+                if (address.length < 10 || address.length > 100) {
+                    isValid = false;
+                    feedback += "Address must be between 10-100 characters.<br>";
+                }
+
+                // Available days validation
+                var availableDays = $('#available_days').val();
+                if (!/^[a-zA-Z\s,]+$/.test(availableDays)) {
+                    isValid = false;
+                    feedback += "Available days must contain only letters, commas, and spaces.<br>";
+                }
+
+                // Email validation
+                var email = $('#email').val();
+                if (!/^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/.test(email)) {
+                    isValid = false;
+                    feedback += "Email must be in lowercase and follow a valid email format.<br>";
+                }
+
+                // Password validation
+                var password = $('#password').val();
+                if (password.length < 8) {
+                    isValid = false;
+                    feedback += "Password must be at least 8 characters long.<br>";
+                }
+
+                if (isValid) {
+                    // AJAX Submission
+                    var formData = {
+                        "full_name": fullName,
+                        "specialty": specialty,
+                        "phone": phone,
+                        "address": address,
+                        "available_days": availableDays,
+                        "email": email,
+                        "password": password,
+                        csrfmiddlewaretoken: '{{ csrf_token }}'
+                    };
+
+                    $.ajax({
+                        method: "POST",
+                        data: formData,
+                        success: function (response) {
+                            $('#responseMessage').html("Doctor added successfully!").css("color", "green");
+                            $('#doctorForm')[0].reset();
+                        },
+                        error: function (xhr, textStatus, errorThrown) {
+                            $('#responseMessage').html("Error adding doctor: " + errorThrown).css("color", "red");
+                        }
+                    });
+                } else {
+                    $('#responseMessage').html(feedback).css("color", "red");
+                }
+            });
+        });
+    </script>
+</body>
+{% endblock content %}

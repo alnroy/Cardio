@@ -1,0 +1,70 @@
+{% extends 'Patient/base.html' %}
+{% load static %}
+{% block head %}
+<!-- Add any required CSS files here -->
+{% endblock head %}
+
+{% block content %}
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f5f5f5;
+    }
+
+
+
+    h1 {
+        text-align: center;
+    }
+
+    form {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    label {
+        font-weight: bold;
+    }
+
+    input[type="text"], input[type="email"], textarea {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+    }
+
+    button {
+        background-color: #007bff;
+        color: white;
+        padding: 10px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    button:hover {
+        background-color: #0056b3;
+    }
+</style>
+
+<div class="container"><br>
+    <br><br><br>
+    
+    <h1>Feedback Form</h1>
+    <br>
+    <br><br><br>
+    
+    <form action="{% url 'GiveFeedback' %}" method="POST">
+        {% csrf_token %}
+        
+        <label for="feedback_text">Your Feedback:</label>
+        <textarea id="feedback_text" name="feedback_text" rows="4" required></textarea>
+
+        <button type="submit">Submit Feedback</button>
+    </form>
+</div>
+{% endblock content %}

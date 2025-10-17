@@ -1,0 +1,60 @@
+{% extends "Patient/base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="text-center mb-4">Medical Prescriptions</h2>
+
+    {% if ob %}
+        <button onclick="printPrescriptions()" class="btn btn-success mb-3">🖨️ Print Prescription</button>
+
+        <div id="prescription-content">
+            <div class="card mb-4 shadow">
+                <div class="card-header bg-primary text-white">
+                    <h5>Prescription #{{ ob.id }} | Booking ID: {{ ob.bookid.id }}</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Symptoms:</strong> {{ ob.symptoms }}</p>
+                    <p><strong>Diagnosed Disease:</strong> {{ ob.disease }}</p>
+                    <hr>
+                    <h6 class="text-primary">Prescription</h6>
+                    <p class="text-muted">{{ ob.prescription }}</p>
+                    <h6 class="text-danger">Doctor's Remarks</h6>
+                    <p>{{ ob.remarks }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Order Medicine Button -->
+
+    {% else %}
+        <p class="text-center text-danger">No prescriptions available.</p>
+    {% endif %}
+</div>
+
+<style>
+    .card {
+        border-radius: 10px;
+        overflow: hidden;
+        page-break-inside: avoid; /* Ensures each prescription prints properly */
+    }
+    .card-header {
+        font-weight: bold;
+    }
+    .card-body p {
+        font-size: 16px;
+        line-height: 1.5;
+    }
+</style>
+
+<script>
+    function printPrescriptions() {
+        var printContent = document.getElementById("prescription-content").innerHTML;
+        var originalContent = document.body.innerHTML;
+
+        document.body.innerHTML = printContent;
+        window.print();
+        document.body.innerHTML = originalContent;
+    }
+</script>
+
+{% endblock %}

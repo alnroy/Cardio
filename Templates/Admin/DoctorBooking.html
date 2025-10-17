@@ -1,0 +1,143 @@
+{% extends "Admin/base.html" %}
+
+{% block content %}
+<head>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #d0eaff, #f0faff);
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+    
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 25px;
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 16px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+        }
+    
+        h1 {
+            text-align: center;
+            color: #007acc;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+    
+        .search-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+    
+        input[type="text"] {
+            padding: 10px 15px;
+            width: 70%;
+            border: none;
+            border-radius: 12px;
+            background-color: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            font-size: 1rem;
+            transition: box-shadow 0.3s ease-in-out;
+        }
+    
+        input[type="text"]:focus {
+            outline: none;
+            box-shadow: 0 0 10px rgba(0, 123, 255, 0.3);
+        }
+    
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 12px;
+            margin-top: 20px;
+        }
+    
+        th {
+            background-color: rgba(0, 123, 255, 0.8);
+            color: white;
+            padding: 14px;
+            border: none;
+            text-align: left;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+            font-weight: 500;
+        }
+    
+        td {
+            background-color: rgba(255, 255, 255, 0.85);
+            padding: 14px;
+            border: none;
+            box-shadow: 0 1px 6px rgba(0, 0, 0, 0.05);
+            border-radius: 10px;
+            transition: transform 0.2s ease-in-out;
+        }
+    
+        tr:hover td {
+            background-color: rgba(235, 245, 255, 0.9);
+            transform: translateY(-2px);
+        }
+    </style>
+    
+</head>
+<body>
+    <div class="container">
+        <h1>View Appoinments</h1>
+        <div class="search-container">
+            <input type="text" id="searchInput" placeholder="Search by ID or Name" onkeyup="searchPatients()">
+        </div>
+        <table id="patientsTable">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Patient Name</th>
+                    <th>Doctor Name</th>
+                    <th>Slot</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for patient in ob %}
+                <tr>
+                    <td>{{ patient.id }}</td>
+                    <td>{{ patient.patient.full_name }}</td>
+                    <td>{{ patient.doctor.full_name }}</td>
+                    <td>{{ patient.booking_sloat }}</td>
+                    <td>{{ patient.booking_date }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        function searchPatients() {
+            const input = document.getElementById("searchInput");
+            const filter = input.value.toLowerCase();
+            const table = document.getElementById("patientsTable");
+            const tr = table.getElementsByTagName("tr");
+
+            for (let i = 1; i < tr.length; i++) {
+                const tdId = tr[i].getElementsByTagName("td")[0]; // ID
+                const tdName = tr[i].getElementsByTagName("td")[1]; // Name
+
+                if (tdId || tdName) {
+                    const idText = tdId.textContent || tdId.innerText;
+                    const nameText = tdName.textContent || tdName.innerText;
+
+                    if (idText.toLowerCase().indexOf(filter) > -1 || nameText.toLowerCase().indexOf(filter) > -1) {
+                        tr[i].style.display = "";
+                    } else {
+                        tr[i].style.display = "none";
+                    }
+                }
+            }
+        }
+    </script>
+</body>
+{% endblock content %}

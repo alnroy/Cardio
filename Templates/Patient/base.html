@@ -1,0 +1,160 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Medicaid - Patient Home</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <style>
+    body {
+      background-image: url("{% static 'five.jpg' %}");
+      font-family: 'Nunito', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+      background:cover;
+      color: #555;
+    }
+    .navbar {
+      background: linear-gradient(90deg, #ff9a9e 0%, #fad0c4 100%);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    .navbar-brand {
+      font-weight: 900;
+      font-size: 1.8rem;
+      color: #fff;
+      letter-spacing: 1px;
+    }
+    .nav-link {
+      font-weight: bold;
+      margin: 0 10px;
+      color: #fff !important;
+      border-radius: 20px;
+      transition: all 0.4s ease;
+    }
+    .nav-link:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+    .container {
+      
+      margin: 30px auto;
+      background: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(12px);
+      border-radius: 16px;
+      padding: 30px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    }
+    h1 {
+      font-weight: 900;
+      color: #fff;
+      font-size: 2.8rem;
+      text-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
+    }
+    .lead {
+      color: #ffe;
+      font-weight: 400;
+      margin-top: 10px;
+      font-size: 1.2rem;
+    }
+    .card {
+      border: none;
+      border-radius: 20px;
+      background: linear-gradient(145deg, #ffe3e3, #ffe3e3);
+      box-shadow: 8px 8px 16px #d1b1b1, -8px -8px 16px #ffffff;
+      transition: 0.4s;
+    }
+    .card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+    .card h5 {
+      font-weight: 700;
+      font-size: 1.5rem;
+      margin-bottom: 15px;
+      color: #ff7b7b;
+    }
+    .btn-danger {
+      background: linear-gradient(to right, #ff9a9e, #fad0c4);
+      border: none;
+      padding: 10px 25px;
+      border-radius: 25px;
+      font-weight: bold;
+      letter-spacing: 1px;
+      transition: 0.4s;
+    }
+    .btn-danger:hover {
+      background: linear-gradient(to right, #fad0c4, #ff9a9e);
+      transform: scale(1.05);
+    }
+    .footer {
+      background: rgba(0, 0, 0, 0.5);
+      color: #fff;
+      font-size: 14px;
+      font-weight: 400;
+      text-align: center;
+      padding: 12px;
+      position: fixed;
+      width: 100%;
+      bottom: 0;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg">
+  <div class="container">
+    <a class="navbar-brand" href="#"><img src="{% static "icon.png" %}" width="5%" height="5%">  Medicaid - PATIENT</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+      aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon" style="filter: invert(1);"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item"><a class="nav-link active" href="{% url 'userhome' %}">Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'TakeAppoinment' %}">Take Appointment</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'MyAppoinment' %}">My Appointments</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'GiveFeedback' %}">Feedbacks</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'Predict' %}">Predict Heart Disease</a></li>
+        <li class="nav-item"><a class="nav-link text-warning fw-bold" href="{% url 'home' %}">Logout</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+{% block content %}
+<!-- Hero Section -->
+<div class="container text-center">
+  <h1 class="mt-5">Welcome to H-Care</h1>
+  <p class="lead">Your personalized healthcare companion</p>
+
+  <div class="row mt-5 justify-content-center">
+    <div class="col-md-4 mb-4">
+      <div class="card p-4">
+        <h5>Appointments</h5>
+        <p>Book and manage your doctor appointments.</p>
+        <a href="{% url 'TakeAppoinment' %}" class="btn btn-danger">Book Now</a>
+      </div>
+    </div>
+    <div class="col-md-4 mb-4">
+      <div class="card p-4">
+        <h5>Predict Heart Disease</h5>
+        <p>Predict Heart Disease easily with AI assistance.</p>
+        <a href="{% url 'Predict' %}" class="btn btn-danger">Predict</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock content %}
+
+<!-- Footer -->
+<div class="footer">
+  <p>© 2025 H-Care. All Rights Reserved.</p>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

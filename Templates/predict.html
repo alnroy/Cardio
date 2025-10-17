@@ -1,0 +1,395 @@
+{% extends "Patient/base.html" %}
+{%load static%}
+{% block content %}
+
+<style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap');
+    
+        body {
+            
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            color: #f2f2f2;
+            background-size: cover;
+        }
+    
+        .container {
+            
+            margin: 60px auto;
+            padding: 40px;
+            background: linear-gradient(90deg, #ff9a9e 0%, #fad0c4 100%);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            animation: fadeIn 0.6s ease-in-out;
+        }
+    
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    
+        h2 {
+            text-align: center;
+            font-size: 28px;
+            color: #ff80ab;
+            margin-bottom: 30px;
+            font-weight: 700;
+        }
+    
+        h1, h2 {
+            color: #ff66cc;
+            text-align: center;
+        }
+    
+        .input-group {
+            margin-bottom: 20px;
+        }
+    
+        #predictionForm{
+            max-width:800px;
+            margin: 60px auto;
+            padding: 40px;
+            background: rgba(1, 1, 1, 0.3);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(168, 55, 181, 0.4);
+            animation: fadeIn 0.6s ease-in-out;
+        }
+        label {
+            font-weight: 500;
+            color: #ddd;
+            display: block;
+            margin-bottom: 6px;
+        }
+    
+        input, select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #44445f;
+            border-radius: 12px;
+            font-size: 15px;
+            background-color: #39394f;
+            color: #f8f8f8;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+        }
+    
+        input:focus, select:focus {
+            border-color: #ff66cc;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(255, 102, 204, 0.2);
+        }
+    
+        #predictButton {
+            display: block;
+            width: 100%;
+            padding: 14px;
+            background-color: #ff66cc;
+            color: #fff;
+            font-weight: bold;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+    
+        #predictButton:hover {
+            background-color: #e055b2;
+            transform: scale(1.02);
+        }
+    
+        .loading {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+            font-size: 16px;
+            color: #bbb;
+        }
+    
+        #result {
+            text-align: center;
+            font-weight: bold;
+            font-size: 18px;
+            color: #8bc34a;
+            margin-top: 20px;
+        }
+    
+        #result.danger {
+            color: #ff6f61;
+        }
+    
+        ul {
+            padding-left: 20px;
+            color: #ccc;
+        }
+    
+        p, li {
+            font-size: 14px;
+            line-height: 1.6;
+            color: #ccc;
+        }
+    
+        html {
+            scroll-behavior: smooth;
+        }
+        .medd {
+            max-width:900px;
+            margin: 60px auto;
+            padding: 40px;
+            background: rgba(70, 127, 167, 0.61);
+            color:black;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(170, 23, 153, 0.59);
+            animation: fadeIn 0.6s ease-in-out;
+        }
+        #bgVideo {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            width: 100vw;
+            object-fit: cover;
+            z-index: -1;
+            filter: brightness(0.4);
+          }
+      
+</style>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<video autoplay muted loop id="bgVideo">
+    <source src="{% static 'onevideo.mp4' %}" type="video/mp4">
+  </video>
+
+    <form id="predictionForm">
+        <h2>Predict Heart Disease</h2>
+        
+        <div class="input-group">
+            <label for="age">Age</label>
+            <input type="number" id="age" name="age" required>
+        </div>
+
+        <div class="input-group">
+            <label for="sex">Sex</label>
+            <select id="sex" name="sex" required>
+                <option value="">Select Sex</option>
+                <option value="1">Male</option>
+                <option value="0">Female</option>
+            </select>
+        </div>
+       
+        
+        <div class="input-group">
+            <label for="cp">Chest Pain Type</label>
+            <select id="cp" name="cp" required>
+                <option value="">Select Chest Pain Type</option>
+                <option value="1">Typical Angina</option>
+                <option value="2">Atypical Angina</option>
+                <option value="3">Non-anginal Pain</option>
+                <option value="4">Asymptomatic</option>
+            </select>
+        </div>
+        
+        <div class="input-group">
+            <label for="trestbps">Resting Blood Pressure</label>
+            <input type="number" id="trestbps" name="trestbps" required>
+        </div>
+        
+        <div class="input-group">
+            <label for="chol">Serum Cholesterol (mg/dl)</label>
+            <input type="number" id="chol" name="chol" required>
+        </div>
+        
+        <div class="input-group">
+            <label for="fbs">Fasting Blood Sugar &gt; 120 mg/dl</label>
+            <select id="fbs" name="fbs" required>
+                <option value="">Select Fasting Blood Sugar</option>
+                <option value="1">True</option>
+                <option value="0">False</option>
+            </select>
+        </div>
+        
+        <div class="input-group">
+            <label for="restecg">Resting ECG Results</label>
+            <select id="restecg" name="restecg" required>
+                <option value="">Select Resting ECG</option>
+                <option value="0">Normal</option>
+                <option value="1">Having ST-T wave abnormality</option>
+                <option value="2">Showing probable/definite left ventricular hypertrophy</option>
+            </select>
+        </div>
+        
+        <div class="input-group">
+            <label for="thalach">Max Heart Rate Achieved</label>
+            <input type="number" id="thalach" name="thalach" required>
+        </div>
+        
+        <div class="input-group">
+            <label for="exang">Exercise Induced Angina</label>
+            <select id="exang" name="exang" required>
+                <option value="">Select Exercise Induced Angina</option>
+                <option value="1">Yes</option>
+                <option value="0">No</option>
+            </select>
+        </div>
+        
+        <div class="input-group">
+            <label for="oldpeak">Oldpeak (ST depression)</label>
+            <input type="number" id="oldpeak" name="oldpeak" step="0.1" required>
+        </div>
+        
+        <div class="input-group">
+            <label for="slope">Slope of the Peak Exercise ST Segment</label>
+            <select id="slope" name="slope" required>
+                <option value="0">Select Slope</option>
+                <option value="1">Upsloping</option>
+                <option value="2">Flat</option>
+                <option value="3">Downsloping</option>
+            </select>
+        </div>
+        
+        <div class="input-group">
+            <label for="ca">Number of Major Vessels (0-3) Colored by Fluoroscopy</label>
+            <select id="ca" name="ca" required>
+                <option value="">Select Number of Major Vessels</option>
+                <option value="0">0</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+            </select>
+        </div>
+        
+        <div class="input-group">
+            <label for="thal">Thalassemia (Thal)</label>
+            <select id="thal" name="thal" required>
+                <option value="0">Select Thal</option>
+                <option value="1">Normal</option>
+                <option value="2">Fixed Defect</option>
+                <option value="3">Reversible Defect</option>
+            </select>
+        </div>
+        <!-- More fields similar to these... -->
+
+        <button type="button" id="predictButton">Predict</button>
+        
+        <!-- Loading animation -->
+        <div class="loading" id="loading">Processing...</div>
+        
+        <!-- Result -->
+        <p id="result"></p>
+    </form>
+    <br>
+    <br>
+    <br>
+    <br>   <br>
+    <br>
+    <br>
+    <br>
+<div class="medd">
+    <h1>Medical Terms Explanation</h1>
+    <h2>1. Chest Pain Type (4 values):</h2>
+    <p>Different types of chest pain that help doctors understand the heart's condition:</p>
+    <ul>
+        <li><strong>0:</strong> Typical angina - pain caused by reduced blood flow to the heart, often triggered by physical activity or stress.</li>
+        <li><strong>1:</strong> Atypical angina - chest discomfort that doesn't match the usual symptoms of heart-related pain.</li>
+        <li><strong>2:</strong> Non-anginal pain - chest pain not related to the heart, possibly from muscles or digestion.</li>
+        <li><strong>3:</strong> Asymptomatic - no chest pain or symptoms.</li>
+    </ul>
+
+    <h2>2. Resting Blood Pressure:</h2>
+    <p>The pressure of blood against artery walls when you're at rest. It's measured in millimeters of mercury (mmHg). High values can indicate heart strain.</p>
+
+    <h2>3. Serum Cholesterol in mg/dl:</h2>
+    <p>The amount of cholesterol in your blood. Cholesterol is a fatty substance that, in high amounts, can clog arteries and increase heart disease risk. Measured in milligrams per deciliter (mg/dl).</p>
+
+    <h2>4. Fasting Blood Sugar > 120 mg/dl:</h2>
+    <p>A blood sugar level after fasting (not eating for 8 hours). If it’s above 120 mg/dl, it could mean diabetes or prediabetes.</p>
+
+    <h2>5. Resting Electrocardiographic Results (values 0, 1, 2):</h2>
+    <p>Results of a heart test (ECG) when you're resting:</p>
+    <ul>
+        <li><strong>0:</strong> Normal result.</li>
+        <li><strong>1:</strong> Shows mild abnormalities, like changes in heart rhythm.</li>
+        <li><strong>2:</strong> Indicates a more significant problem, like a heart attack.</li>
+    </ul>
+
+    <h2>6. Maximum Heart Rate Achieved:</h2>
+    <p>The highest heart rate reached during exercise or a stress test. It helps assess how well your heart responds to activity.</p>
+
+    <h2>7. Exercise-Induced Angina:</h2>
+    <p>Chest pain triggered by physical activity. It usually happens when the heart doesn’t get enough oxygen.</p>
+
+    <h2>8. Oldpeak (ST Depression Induced by Exercise Relative to Rest):</h2>
+    <p>A measure from an ECG that shows how much the heart’s electrical activity changes during exercise compared to rest. It can indicate reduced blood flow.</p>
+
+    <h2>9. The Slope of the Peak Exercise ST Segment:</h2>
+    <p>Describes the shape of a specific part of the ECG during exercise:</p>
+    <ul>
+        <li><strong>Upsloping:</strong> Generally normal.</li>
+        <li><strong>Flat or Downsloping:</strong> Could indicate heart problems.</li>
+    </ul>
+
+    <h2>10. Number of Major Vessels (0-3) Colored by Fluoroscopy:</h2>
+    <p>Fluoroscopy is an imaging test. This measures how many of the main heart blood vessels are blocked or narrowed:</p>
+    <ul>
+        <li><strong>0:</strong> None.</li>
+        <li><strong>1-3:</strong> Indicates the number of blocked vessels.</li>
+    </ul>
+
+    <h2>11. Thal (0 = Normal, 1 = Fixed Defect, 2 = Reversible Defect):</h2>
+    <p>Describes the heart’s condition based on a thallium scan:</p>
+    <ul>
+        <li><strong>0:</strong> Normal blood flow.</li>
+        <li><strong>1:</strong> Fixed defect - part of the heart isn’t getting enough blood, and the problem is permanent.</li>
+        <li><strong>2:</strong> Reversible defect - part of the heart doesn’t get enough blood during activity but recovers at rest.</li>
+    </ul>
+
+</div>
+
+<script>
+    $(document).ready(function() {
+        $('#predictButton').on('click', function() {
+            $('#loading').show();
+            $('#result').text('').removeClass('danger');
+
+            var formData = {
+                age: $('#age').val(),
+                sex: $('#sex').val(),
+                cp: $('#cp').val(),
+                trestbps: $('#trestbps').val(),
+                chol: $('#chol').val(),
+                fbs: $('#fbs').val(),
+                restecg: $('#restecg').val(),
+                thalach: $('#thalach').val(),
+                exang: $('#exang').val(),
+                oldpeak: $('#oldpeak').val(),
+                slope: $('#slope').val(),
+                ca: $('#ca').val(),
+                thal: $('#thal').val(),
+                csrfmiddlewaretoken: '{{ csrf_token }}'
+            };
+
+            $.ajax({
+                method: 'POST',
+                data: formData,
+                success: function(response) {
+                    $('#loading').hide();
+                    if (response.value == 1) {
+                        $('#result').text("You have a chance of heart disease.")
+                                    .addClass('danger');
+                    } else {
+                        $('#result').text("You have no chance of heart disease.")
+                                    .removeClass('danger');
+                    }
+                },
+                error: function(error) {
+                    $('#loading').hide();
+                    $('#result').text("An error occurred. Please try again.")
+                                .addClass('danger');
+                }
+            });
+        });
+    });
+</script>
+
+{% endblock content %}

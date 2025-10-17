@@ -1,0 +1,118 @@
+{% extends "Patient/base.html" %}
+
+{% block content %}
+<head>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://kit.fontawesome.com/a076d05399.js"></script>
+    <style>
+        .order-tracking {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            position: relative;
+        }
+
+        .tracking-step {
+            text-align: center;
+            width: 25%;
+            position: relative;
+        }
+
+        .tracking-step i {
+            font-size: 24px;
+            color: #ccc;
+            background: #fff;
+            padding: 10px;
+            border-radius: 50%;
+            border: 3px solid #ccc;
+            transition: all 0.3s ease-in-out;
+        }
+
+        .tracking-step.active i {
+            color: white;
+            background: #28a745;
+            border-color: #28a745;
+        }
+
+        .tracking-step span {
+            display: block;
+            font-size: 14px;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+
+        .tracking-line {
+            position: absolute;
+            top: 30px;
+            left: 12%;
+            width: 76%;
+            height: 5px;
+            background: #ccc;
+            z-index: -1;
+            transition: all 0.3s ease-in-out;
+        }
+
+        .tracking-line.active {
+            background: #28a745;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Your Medicine Orders</h2>
+        {% if orders %}
+        <table class="table table-bordered mt-3">
+            <thead class="thead-dark">
+                <tr>
+                    <th>#</th>
+                    <th>Prescription</th>
+                    <th>Order Date</th>
+                    <th>Status</th>
+                    <th>Delivery Address</th>
+                    <th>Contact Number</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in orders %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ order.prescription.prescription }}</td>
+                    <td>{{ order.order_date|date:"Y-m-d H:i" }}</td>
+                    <td>
+                        <div class="order-tracking">
+                            <div class="tracking-line {% if order.status in 'Processing,Shipped,Delivered' %}active{% endif %}"></div>
+                            
+                            <div class="tracking-step {% if order.status in 'Pending,Processing,Shipped,Delivered' %}active{% endif %}">
+                                <i class="fas fa-receipt"></i>
+                                <span>Pending</span>
+                            </div>
+
+                            <div class="tracking-step {% if order.status in 'Processing,Shipped,Delivered' %}active{% endif %}">
+                                <i class="fas fa-cogs"></i>
+                                <span>Processing</span>
+                            </div>
+
+                            <div class="tracking-step {% if order.status in 'Shipped,Delivered' %}active{% endif %}">
+                                <i class="fas fa-truck"></i>
+                                <span>Shipped</span>
+                            </div>
+
+                            <div class="tracking-step {% if order.status == 'Delivered' %}active{% endif %}">
+                                <i class="fas fa-check-circle"></i>
+                                <span>Delivered</span>
+                            </div>
+                        </div>
+                    </td>
+                    <td>{{ order.delivery_address }}</td>
+                    <td>{{ order.contact_number }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="alert alert-info">You have no medicine orders yet.</div>
+        {% endif %}
+    </div>
+</body>
+{% endblock content %}

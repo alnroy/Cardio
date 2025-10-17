@@ -1,0 +1,31 @@
+{% extends "Patient/base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="text-center">Order Medicines</h2>
+    
+    <div class="card shadow p-3">
+        <div class="card-header bg-primary text-white">
+            <h5>Prescription for {{ prescription.bookid.patient.full_name }}</h5>
+        </div>
+        <div class="card-body">
+            <p><strong>Symptoms:</strong> {{ prescription.symptoms }}</p>
+            <p><strong>Diagnosed Disease:</strong> {{ prescription.disease }}</p>
+            <p><strong>Prescription:</strong> {{ prescription.prescription }}</p>
+        </div>
+    </div>
+
+    <form method="post" class="mt-3">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label class="form-label">Delivery Address</label>
+            <textarea name="delivery_address" class="form-control" required></textarea>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Contact Number</label>
+            <input type="text" name="contact_number" class="form-control" required>
+        </div>
+        <button type="submit" class="btn btn-success">Order Medicine</button>
+    </form>
+</div>
+{% endblock %}

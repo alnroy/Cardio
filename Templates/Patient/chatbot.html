@@ -1,0 +1,103 @@
+{% extends 'Patient/base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center">Medical Voice Chatbot</h2>
+
+    <div class="card p-4 shadow-sm">
+        <div id="chat-container">
+            <p><strong>Chatbot:</strong> <span id="chatbot-question">Press "Start" to begin.</span></p>
+            <p><strong>Your Response:</strong> <span id="user-response"></span></p>
+            <p><strong>Diagnosis:</strong> <span id="final-diagnosis"></span></p>
+        </div>
+
+        <button id="start-btn" class="btn btn-primary mt-3">🎙 Start</button>
+        <button id="type-btn" class="btn btn-secondary mt-3">⌨ Type Response</button>
+        
+        <div id="text-response-container" style="display: none;">
+            <input type="text" id="text-response" class="form-control mt-2" placeholder="Type your response here...">
+            <button id="send-btn" class="btn btn-success mt-2">Send</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    let questionID = 1;
+
+    document.getElementById("start-btn").addEventListener("click", function() {
+        fetchQuestion(questionID);
+    });
+
+    document.getElementById("type-btn").addEventListener("click", function() {
+        document.getElementById("text-response-container").style.display = "block";
+    });
+
+    document.getElementById("send-btn").addEventListener("click", function() {
+        let response = document.getElementById("text-response").value.toLowerCase().trim();
+        if (response) {
+            document.getElementById("user-response").innerText = response;
+            handleUserResponse(response);
+        }
+    });
+
+    document.getElementById("text-response").addEventListener("keyup", function(event) {
+        if (event.key === "Enter") {
+            let response = event.target.value.toLowerCase().trim();
+            if (response) {
+                document.getElementById("user-response").innerText = response;
+                handleUserResponse(response);
+            }
+        }
+    });
+
+    function fetchQuestion(id) {
+        fetch("{% url 'chatbot' %}", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ question_id: id, response: "" })
+        })
+                .then(response => response.json())
+        .then(data => {
+            if (data.question) {
+                document.getElementById("chatbot-question").innerText = data.question;
+                questionID = id;  // Update the question ID
+                recognizeSpeech();
+            } else {
+                document.getElementById("final-diagnosis").innerText = data.diagnosis;
+            }
+        });
+    }
+
+    function recognizeSpeech() {
+        const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+        recognition.lang = "en-US";
+        recognition.start();
+
+        recognition.onresult = function(event) {
+            let speechResult = event.results[0][0].transcript.toLowerCase().trim();
+            document.getElementById("user-response").innerText = speechResult;
+            handleUserResponse(speechResult);
+        };
+    }
+
+    function handleUserResponse(response) {
+        fetch("{% url 'chatbot' %}", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ question_id: questionID, response: response })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.question) {
+                document.getElementById("chatbot-question").innerText = data.question;
+                questionID += 1;  // Correctly increment question ID
+                recognizeSpeech();
+            } else if (data.diagnosis) {
+                document.getElementById("final-diagnosis").innerText = data.diagnosis;
+            } else {
+                document.getElementById("final-diagnosis").innerText = "Sorry, I couldn't understand. Please try again.";
+            }
+        });
+    }
+</script>
+{% endblock %}

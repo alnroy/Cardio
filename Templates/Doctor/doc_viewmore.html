@@ -1,0 +1,59 @@
+{% extends "Doctor/base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="text-center text-primary">Add Medical Prescription</h2>
+
+    <div class="card shadow p-4 mt-3">
+        <h5><strong>Patient Name:</strong> {{ booking.patient.full_name }}</h5>
+        <h6><strong>Symptoms:</strong> {{ booking.symptoms }}</h6>
+    </div>
+
+    <form method="POST" class="mt-4">
+        {% csrf_token %}
+
+        <div class="form-group">
+            <label><strong>Symptoms:</strong></label>
+            <textarea name="symptoms" class="form-control" required>{{ booking.symptoms }}</textarea>
+        </div>
+
+        <div class="form-group">
+            <label><strong>Disease Diagnosis:</strong></label>
+            <input type="text" name="disease" class="form-control" required>
+        </div>
+
+        <div class="form-group">
+            <label><strong>Prescription:</strong></label>
+            <textarea name="prescription" class="form-control" rows="3" required></textarea>
+        </div>
+
+        <div class="form-group">
+            <label><strong>Doctor's Remarks:</strong></label>
+            <textarea name="remarks" class="form-control" rows="2"></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-success">💊 Save Prescription</button>
+        <a href="{% url 'Bookings' %}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+
+<style>
+    .container {
+        max-width: 600px;
+    }
+    .card {
+        border-left: 5px solid #007bff;
+        padding: 15px;
+        background: #f8f9fa;
+    }
+</style>
+
+{% if messages %}
+    <script>
+        {% for message in messages %}
+            alert("{{ message }}");
+        {% endfor %}
+    </script>
+{% endif %}
+
+{% endblock %}

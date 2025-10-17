@@ -1,0 +1,82 @@
+{% extends 'Admin/base.html' %}
+{% load static %}
+{% block head %}
+<!-- Add any required CSS files here -->
+{% endblock head %}
+
+{% block content %}
+<style>
+    body {
+        font-family: 'Poppins', sans-serif;
+        margin: 0;
+        padding: 0;
+        background: linear-gradient(135deg, #d0f1ff, #eaf6ff);
+        color: #333;
+    }
+
+    .container {
+        max-width: 800px;
+        margin: 30px auto;
+        padding: 25px;
+        background: rgba(255, 255, 255, 0.6);
+        backdrop-filter: blur(10px);
+        border-radius: 16px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s ease-in-out;
+    }
+
+    h1 {
+        text-align: center;
+        color: #007acc;
+        font-weight: 600;
+        margin-bottom: 20px;
+    }
+
+    .feedback-item {
+        background-color: rgba(255, 255, 255, 0.75);
+        border: 1px solid rgba(0, 123, 255, 0.2);
+        border-radius: 12px;
+        padding: 18px;
+        margin: 15px 0;
+        box-shadow: 0 4px 12px rgba(0, 123, 255, 0.05);
+        transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .feedback-item:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(0, 123, 255, 0.1);
+    }
+
+    .feedback-item h4 {
+        margin: 0 0 10px 0;
+        font-size: 1.1rem;
+        color: #005a99;
+        font-weight: 500;
+    }
+
+    .feedback-item p {
+        margin: 6px 0;
+        font-size: 0.95rem;
+    }
+
+    .feedback-date {
+        color: #666;
+        font-size: 0.85rem;
+        font-style: italic;
+    }
+</style>
+
+<div class="container">
+    <h1>Feedback List</h1>
+
+    {% for feedback in ob %}
+        <div class="feedback-item">
+            <h4>{{ feedback.patient }} says:</h4>  <!-- Adjust based on your user model -->
+            <p>{{ feedback.comment }}</p>
+            <p class="feedback-date">Submitted on: {{ feedback.date|date:"F j, Y, g:i a" }}</p>
+        </div>
+    {% empty %}
+        <p>No feedback available.</p>
+    {% endfor %}
+</div>
+{% endblock content %}

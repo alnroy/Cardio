@@ -1,0 +1,165 @@
+{% extends "Doctor/base.html" %}
+
+{% block content %}
+<head>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .container {
+            margin-top: 50px;
+        }
+        h2 {
+            color: #007bff;
+        }
+        .table th, .table td {
+            vertical-align: middle;
+        }
+        .no-bookings {
+            text-align: center;
+            color: #dc3545;
+        }
+    </style>
+    <script>
+        function fetchBookings() {
+            const selectedDate = document.getElementById("bookingDate").value;
+            if (!selectedDate) {
+                alert("Please select a date.");
+                return;
+            }
+        
+            $.ajax({
+                method: "POST",
+                data: {
+                    date: selectedDate,
+                    csrfmiddlewaretoken: '{{ csrf_token }}'  // CSRF Token for security
+                },
+                success: function (response) {
+                    const bookingsTableBody = document.getElementById("bookingsTableBody");
+                    bookingsTableBody.innerHTML = ''; // Clear previous bookings
+        
+                    if (response.length > 0) {
+                        response.forEach(booking => {
+                            const row = document.createElement("tr");
+                            row.innerHTML = `
+                                <td>${booking.id}</td>
+                                <td>${booking.patient_name}</td>
+                                <td>${booking.symptoms}</td>
+                                <td>${booking.Sloat}</td>
+                                <td>
+                                    ${booking.status === 'Completed' ? 
+                                        '<span class="text-success">Completed</span>' : 
+                                        `<select onchange="changeStatus(${booking.id}, this.value)" class="form-control">
+                                            <option value="Pending" ${booking.status === 'Pending' ? 'selected' : ''}>Pending</option>
+                                            <option value="Confirmed" ${booking.status === 'Confirmed' ? 'selected' : ''}>Confirmed</option>
+                                            <option value="Cancelled" ${booking.status === 'Cancelled' ? 'selected' : ''}>Cancelled</option>
+                                        </select>`
+                                    }
+                                </td>
+                                <td>
+                                    <a href="/doc_viewmore/${booking.id}" class="btn btn-sm btn-primary">Consult</a>
+                                </td>
+                                
+<td>
+    ${booking.status !== 'Completed' ? `
+        <div class="mt-2">
+            <input type="date" id="date_${booking.id}" class="form-control mb-1" />
+            <button onclick="changeBookingDate(${booking.id})" class="btn btn-sm btn-warning">Change Date</button>
+        </div>` : ''}
+</td>
+
+                                
+
+                            `;
+                            bookingsTableBody.appendChild(row);
+                        });
+                    } else {
+                        bookingsTableBody.innerHTML = '<tr><td colspan="6" class="no-bookings">No bookings found for this date.</td></tr>';
+                    }
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                    console.error("AJAX request failed:", textStatus, errorThrown);
+                    alert("There was an error retrieving the bookings.");
+                }
+            });
+        }
+        
+        function changeStatus(bookingId, newStatus) {
+            $.ajax({
+                method: "POST",
+                url: "{% url 'update_booking_status' %}",  // Make sure this URL exists in Django URLs
+                data: {
+                    booking_id: bookingId,
+                    status: newStatus,
+                    csrfmiddlewaretoken: '{{ csrf_token }}'  // CSRF Token for security
+                },
+                success: function (response) {
+                    alert("Status updated successfully!");
+                    fetchBookings(); // Refresh bookings list after updating
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                    console.error("AJAX request failed:", textStatus, errorThrown);
+                    alert("There was an error updating the status.");
+                }
+            });
+        }
+        function changeBookingDate(bookingId) {
+            const newDate = document.getElementById(`date_${bookingId}`).value;
+            if (!newDate) {
+                alert("Please select a date.");
+                return;
+            }
+        
+            $.ajax({
+                method: "POST",
+                url: "{% url 'change_booking_date_ajax' %}",  // Add this to your URLs
+                data: {
+                    booking_id: bookingId,
+                    new_date: newDate,
+                    csrfmiddlewaretoken: '{{ csrf_token }}'
+                },
+                success: function (response) {
+                    alert("Booking date updated successfully!");
+                    fetchBookings(); // Refresh data
+                },
+                error: function (xhr) {
+                    alert("Error updating booking date.");
+                    console.error(xhr.responseText);
+                }
+            });
+        }
+        
+        
+    </script>
+</head>
+<body>
+    <div class="container mt-5">
+        <h2 class="text-center">View Bookings by Doctor</h2>
+        <div class="form-group">
+            <label for="bookingDate">Select Date:</label>
+            <input type="date" id="bookingDate" class="form-control" />
+        </div>
+        <button class="btn btn-primary" onclick="fetchBookings()">View Bookings</button>
+
+        <table class="table table-striped mt-4">
+            <thead>
+                <tr>
+                    <th>Booking ID</th>
+                    <th>Patient Name</th>
+                    <th>Symptoms</th>
+                    <th>Slot</th>
+                    <th>Status</th>
+                    <th>Consult</th>
+                    <th></th>
+
+                </tr>
+            </thead>
+            <tbody id="bookingsTableBody">
+                <!-- Booking entries will be injected here -->
+            </tbody>
+        </table>
+    </div>
+</body>
+{% endblock content %}
